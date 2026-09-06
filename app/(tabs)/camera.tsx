@@ -3,14 +3,14 @@ import { StyleSheet, View,Text } from 'react-native';
 import {SafeAreaView as RNSSafeAreaView} from 'react-native-safe-area-context';
 import { styled } from 'nativewind';
 const SafeAreaView =styled(RNSSafeAreaView);
-const Expence = () => {
+const Camera = () => {
     return (
         <View>
-            <Text>Expence</Text>
+            <Text>Camera</Text>
         </View>
     );
 }
 
 const styles = StyleSheet.create({})
 
-export default Expence;
+export default Camera;
