@@ -7,7 +7,7 @@ export default function HomaPage() {
     <View>
       <Text>This is a homsadasde page</Text>
       <Button 
-      title="About" onPress={() => router.push('/home')}
+      title="About" onPress={() => router.push('/Home')}
       />
     </View>
   );

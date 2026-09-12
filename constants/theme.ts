@@ -1,7 +1,7 @@
 export const colors = {
     background: "#fff9e3",
     foreground: "#081126",
-    card: "#fff8e7",
+    card: "#f5f5f5",
     muted: "#f6eecf",
     mutedForeground: "rgba(0, 0, 0, 0.6)",
     primary: "#081126",
@@ -10,6 +10,8 @@ export const colors = {
     success: "#16a34a",
     destructive: "#dc2626",
     subscription: "#8fd1bd",
+    text: "#ffffff",
+    
 } as const;
 
 export const spacing = {

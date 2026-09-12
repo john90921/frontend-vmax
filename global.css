@@ -75,6 +75,34 @@
         @apply size-6;
     }
 
+    .topbar {
+        @apply border-b border-border bg-background px-5 pb-3;
+    }
+
+    .topbar-row {
+        @apply flex-row items-center justify-between;
+    }
+
+    .topbar-copy {
+        @apply min-w-0 flex-1 pr-3;
+    }
+
+    .topbar-kicker {
+        @apply mb-0.5 text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground;
+    }
+
+    .topbar-title {
+        @apply text-2xl font-sans-bold text-primary;
+    }
+
+    .topbar-avatar {
+        @apply size-11 items-center justify-center rounded-full border-2 border-accent bg-muted;
+    }
+
+    .topbar-initials {
+        @apply text-sm font-sans-bold text-primary;
+    }
+
     .home-header {
         @apply mb-2.5 flex-row items-center justify-between;
     }
@@ -95,8 +123,8 @@
         @apply size-12;
     }
 
-    .home-balance-card {
-        @apply my-2.5 min-h-50 justify-between gap-5 rounded-bl-4xl rounded-tr-4xl bg-accent p-6;
+    .balance-card {
+        @apply my-3 gap-3 rounded-bl-4xl rounded-tr-4xl bg-accent p-4;
     }
 
     .home-balance-label {
@@ -112,7 +140,27 @@
     }
 
     .home-balance-date {
-        @apply text-xl font-sans-medium text-white;
+        @apply text-base font-sans-medium text-white/80;
+    }
+
+    .btn {
+        @apply items-center justify-center rounded-full px-5 py-3;
+    }
+
+    .btn-primary {
+        @apply bg-accent;
+    }
+
+    .btn-on-accent {
+        @apply bg-background;
+    }
+
+    .btn-outline {
+        @apply border border-primary/20 bg-transparent;
+    }
+
+    .btn-label {
+        @apply text-sm font-sans-bold text-primary;
     }
 
     .list-head {

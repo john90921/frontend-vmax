@@ -7,16 +7,18 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors, spacing } from '@/constants/theme';
+import { router } from 'expo-router';
 
 const TAB_ICONS = {
-  home: { outline: 'home-outline', filled: 'home' },
-  expence: { outline: 'receipt-outline', filled: 'receipt' },
-  camera: { outline: 'camera-outline', filled: 'camera' },
-  saving: { outline: 'cash-outline', filled: 'cash' },
-  setting: { outline: 'settings-outline', filled: 'settings' },
+  Home: { outline: 'home-outline', filled: 'home' },
+  Expences: { outline: 'receipt-outline', filled: 'receipt' },
+  Camera: { outline: 'camera-outline', filled: 'camera' },
+  Saving: { outline: 'cash-outline', filled: 'cash' },
+  Setting: { outline: 'settings-outline', filled: 'settings' },
 } as const;
 
 type TabRouteName = keyof typeof TAB_ICONS;
+
 
 export function AppTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
@@ -27,14 +29,18 @@ export function AppTabBar({ state, descriptors, navigation }: BottomTabBarProps)
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const focused = state.index === index;
-          const isCamera = route.name === 'camera';
-          const iconSet = TAB_ICONS[route.name as TabRouteName] ?? TAB_ICONS.home;
+          const isCamera = route.name === 'Camera';
+          const iconSet = TAB_ICONS[route.name as TabRouteName] ?? TAB_ICONS.Home;
           const label =
             options.title ??
             (typeof options.tabBarLabel === 'string' ? options.tabBarLabel : route.name);
 
 
           const onPress = () => {
+            if(route.name === 'Camera') {
+              router.push("/Camera");
+              return;
+            }
             const event = navigation.emit({
               type: 'tabPress',
               target: route.key,

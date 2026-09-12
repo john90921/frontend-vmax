@@ -3,6 +3,7 @@ import '../global.css';
 // import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, Tabs } from 'expo-router';
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { StatusBar } from 'react-native';
@@ -34,9 +35,15 @@ export default function RootLayout() {
     return null;
   }
   return (
+    <KeyboardProvider>
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="expenses/AddExpence"
+        options={{ presentation: 'modal', headerShown: false }}
+      />
     </Stack>
+    </KeyboardProvider>
   );
 }
