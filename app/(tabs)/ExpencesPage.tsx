@@ -60,7 +60,7 @@ function ExpenseRow({ expense, onPress }: { expense: ExpenceType; onPress: () =>
   );
 }
 
-const Expences = () => {
+const ExpencesPage = () => {
   // const [state.expences, setstate.expences] = useState<ExpenceType[]|[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -184,4 +184,4 @@ const Expences = () => {
   );
 };
 
-export default Expences;
+export default ExpencesPage;

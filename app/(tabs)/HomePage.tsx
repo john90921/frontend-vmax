@@ -17,7 +17,7 @@ const expenseItems = [
 ];
 
 
-const Home = () => {
+const HomePage = () => {
   const user = {
     name: 'John Doe',
   };
@@ -36,7 +36,6 @@ const Home = () => {
             </View>
           </View>
           <View className="mt-4 flex-row gap-4">
-            
             <View className="min-w-0 flex-1 basis-0 rounded-lg border border-border bg-card p-4">
               <Text className="text-sm text-primary mb-2">Today's Total Saving</Text>
               <Text className="text-2xl font-sans-bold text-success">+$1,000</Text>
@@ -54,4 +53,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

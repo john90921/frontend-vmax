@@ -22,11 +22,11 @@ export default function TabLayout() {
         sceneStyle: { backgroundColor: colors.background },
         header: () => <AppScreenHeader title={TAB_TITLES[route.name] ?? route.name} />,
       })}>
-      <Tabs.Screen name="Home" options={{ title: 'Home' }} />
-      <Tabs.Screen name="Expences" options={{ title: 'Expenses' }} />
-      <Tabs.Screen name="Camera" options={{ title: 'Camera', header: () => <AppScreenHeader  title="Camera"  /> }} />
-      <Tabs.Screen name="Saving" options={{ title: 'Saving' }} />
-      <Tabs.Screen name="Setting" options={{ title: 'Setting' }} />
+      <Tabs.Screen name="HomePage" options={{ title: 'Home' }} />
+      <Tabs.Screen name="ExpencesPage" options={{ title: 'Expenses' }} />
+      <Tabs.Screen name="CameraPage" options={{ title: 'Camera', header: () => <AppScreenHeader  title="Camera"  /> }} />
+      <Tabs.Screen name="SavingPage" options={{ title: 'Saving' }} />
+      <Tabs.Screen name="SettingPage" options={{ title: 'Setting' }} />
     </Tabs>
   );
 }
