@@ -10,9 +10,9 @@ import { StatusBar } from 'react-native';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import { SplashScreen } from 'expo-router';
-import {SafeAreaView as RNSSafeAreaView} from 'react-native-safe-area-context';
+// import {SafeAreaView as RNSSafeAreaView} from 'react-native-safe-area-context';
 import { styled } from 'nativewind';
-const SafeAreaView =styled(RNSSafeAreaView);
+// const SafeAreaView =styled(RNSSafeAreaView);
 export const unstable_settings = {
   anchor: '(tabs)',
 };

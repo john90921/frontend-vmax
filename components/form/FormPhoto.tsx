@@ -1,12 +1,15 @@
 import * as ImagePicker from 'expo-image-picker';
-import React from 'react';
-import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
 import { Controller, FieldValues } from 'react-hook-form';
+import { Alert, Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import ImageViewing from 'react-native-image-viewing';
 
 import Button from '@/components/button';
 import { FormPhotoProps } from '@/types/FormPhotoProps';
 
-async function pickPhoto(): Promise<string | null> {
+type PhotoValue = { uri: string; width: number; height: number };
+
+async function pickPhoto(): Promise<PhotoValue | null> {
   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!permission.granted) {
     Alert.alert('Permission needed', 'Allow photo library access to attach a receipt.');
@@ -23,57 +26,109 @@ async function pickPhoto(): Promise<string | null> {
     return null;
   }
 
-  return result.assets[0].uri;
+  return {
+    uri: result.assets[0].uri,
+    width: result.assets[0].width,
+    height: result.assets[0].height,
+  };
 }
 
-function FormPhoto<T extends FieldValues>({ control, name, label }: FormPhotoProps<T>) {
+function FormPhoto<T extends FieldValues>({
+  control,
+  name,
+  label,
+  scrollViewRef,
+}: FormPhotoProps<T>) {
+  const [pendingScroll, setPendingScroll] = useState(false);
+  const [viewerVisible, setViewerVisible] = useState(false);
+
+  const scrollIntoView = () => {
+    // Photo sits at the bottom of the form; scroll after the new image has laid out.
+    requestAnimationFrame(() => {
+      scrollViewRef?.current?.scrollToEnd({ animated: true });
+    });
+  };
+
+  const applyPhoto = (onChange: (value: PhotoValue) => void, photo: PhotoValue) => {
+    onChange(photo);
+    setPendingScroll(true);
+  };
+
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <View className="auth-field">
-          <Text className="auth-label">{label}</Text>
+      render={({ field: { onChange, value }, fieldState: { error } }) => {
+        const photo = value as PhotoValue | null | undefined;
+        console.log(photo);
+        return (
+          <View
+            className="auth-field"
+            onLayout={() => {
+              if (!pendingScroll) return;
+              setPendingScroll(false);
+              scrollIntoView();
+            }}>
+            <Text className="auth-label">{label}</Text>
 
-          {value ? (
-            <View className="gap-3">
-              <Image
-                source={{ uri: String(value) }}
-                className="h-40 w-full rounded-2xl border border-border"
-                resizeMode="cover"
-              />
-              <View className="flex-row gap-3">
-                <Button
-                  title="Change"
-                  variant="outline"
-                  styles="flex-1"
-                  onPress={async () => {
-                    const uri = await pickPhoto();
-                    if (uri) onChange(uri);
-                  }}
-                />
-                <Button
-                  title="Remove"
-                  variant="outline"
-                  styles="flex-1"
-                  onPress={() => onChange(null)}
+            {photo?.uri ? (
+              <View className="gap-3">
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  onPress={() => setViewerVisible(true)}
+                  accessibilityRole="imagebutton"
+                  accessibilityLabel="View full screen photo">
+                  <Image
+                    source={{ uri: String(photo.uri) }}
+                    className="w-full rounded-2xl border border-border"
+                    resizeMode="contain"
+                    style={{ height: Math.max(120, photo.height * 0.2) }}
+                  />
+                </TouchableOpacity>
+                <View className="flex-row gap-3">
+                  <Button
+                    title="Change"
+                    variant="outline"
+                    styles="flex-1"
+                    onPress={async () => {
+                      const photoData = await pickPhoto();
+                      if (photoData) applyPhoto(onChange, photoData);
+                    }}
+                  />
+                  <Button
+                    title="Remove"
+                    variant="outline"
+                    styles="flex-1"
+                    onPress={() => onChange(null)}
+                  />
+                </View>
+
+                <ImageViewing
+                  images={[{ uri: String(photo.uri) }]}
+                  imageIndex={0}
+                  visible={viewerVisible}
+                  onRequestClose={() => setViewerVisible(false)}
+                  presentationStyle="overFullScreen"
                 />
               </View>
-            </View>
-          ) : (
-            <TouchableOpacity
-              className="picker-option py-8"
-              onPress={async () => {
-                const uri = await pickPhoto();
-                if (uri) onChange(uri);
-              }}>
-              <Text className="picker-option-text">Tap to upload a photo</Text>
-            </TouchableOpacity>
-          )}
+            ) : (
+      
+       
+              <Pressable
+                className="picker-option"
+                onPress={async () => {
+                  const photoData = await pickPhoto();
+                  if (photoData) applyPhoto(onChange, photoData);
+                }}>
+                <Text className="picker-option-text">Tap to upload a photo</Text>
+              </Pressable>
+            )}
 
-          {error?.message ? <Text className="auth-error">{error.message}</Text> : null}
-        </View>
-      )}
+
+            {error?.message ? <Text className="auth-error">{error.message}</Text> : null}
+          </View>
+        );
+      }}
     />
   );
 }

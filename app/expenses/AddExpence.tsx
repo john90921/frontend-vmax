@@ -1,17 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  Alert,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView, KeyboardController } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { useExpences } from '@/hooks/expences/useExpences';
 import Button from '@/components/button';
 import FormDateTime from '@/components/form/FormDateTime';
 import FormInput from '@/components/form/FormInput';
@@ -25,9 +19,9 @@ import {
   getExpenseFormDefaults,
 } from '@/schemas/expense';
 
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 export default function AddExpense() {
   const insets = useSafeAreaInsets();
+  const scrollViewRef = useRef<ScrollView>(null);
   const {
     control,
     handleSubmit,
@@ -36,36 +30,39 @@ export default function AddExpense() {
     resolver: zodResolver(expenseFormSchema),
     defaultValues: getExpenseFormDefaults(),
   });
-
+  const { state } = useExpences();
   const onSubmit = (values: ExpenseFormValues) => {
     Alert.alert('Expense saved', `${values.category} · $${values.amount.toFixed(2)}`, [
       { text: 'OK', onPress: () => router.back() },
     ]);
   };
 
-  return (
-    <KeyboardAwareScrollView
-    contentContainerStyle={{
-      padding: 20,
-      paddingBottom: 100,
-    }}
-    bottomOffset={80}
+  const handleDismissKeyboard = useCallback(() => {
+    KeyboardController.dismiss();
+  }, []);
 
-      // behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      // keyboardVerticalOffset={100}
-      style={{ paddingTop: insets.top }}>
+  return (
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
       <View className="modal-header">
-        <Text className="modal-title">Add expense</Text>
+        <View className="flex-1 pr-3">
+          <Text className="modal-title">Add expense</Text>
+          <Text className="mt-1 text-sm font-sans-medium text-muted-foreground">
+            Fill in the details below
+          </Text>
+        </View>
         <TouchableOpacity className="modal-close" onPress={() => router.back()}>
           <Text className="modal-close-text">×</Text>
         </TouchableOpacity>
       </View>
 
-      {/* <ScrollView
+      <KeyboardAwareScrollView
+        disableScrollOnKeyboardHide={true}
+        ref={scrollViewRef}
         className="flex-1"
-        contentContainerClassName="modal-body pb-10"
+        contentContainerClassName="modal-body pb-6"
+        bottomOffset={24}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}> */}
+        showsVerticalScrollIndicator={false}>
         <FormInput
           control={control}
           name="amount"
@@ -81,6 +78,7 @@ export default function AddExpense() {
           name="category"
           label="Category"
           options={EXPENSE_CATEGORIES}
+          onSelect={handleDismissKeyboard}
         />
 
         <FormInput
@@ -93,20 +91,26 @@ export default function AddExpense() {
           textAlignVertical="top"
           style={{ minHeight: 100 }}
         />
-        <View className="flex-1 w-full">
-        <FormPhoto control={control} name="photoUri" label="Photo (optional)" />
-        </View>
-        <View className="flex-1 items-end justify-end">
+
+        <FormPhoto
+          control={control}
+          name="photoUri"
+          label="Photo (optional)"
+          scrollViewRef={scrollViewRef}
+        />
+      </KeyboardAwareScrollView>
+
+      <View
+        className="border-t border-border bg-background px-5 pt-4"
+        style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
         <Button
           title={isSubmitting ? 'Saving…' : 'Save expense'}
           variant="primary"
-          styles="mt-2"
+          styles="w-full"
           disabled={isSubmitting}
           onPress={handleSubmit(onSubmit)}
         />
-        </View>
-
-      {/* </ScrollView> */}
-    </KeyboardAwareScrollView>
+      </View>
+    </View>
   );
 }

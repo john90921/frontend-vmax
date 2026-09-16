@@ -30,7 +30,11 @@ export const expenseFormSchema = z.object({
     .trim()
     .max(200, 'Keep description under 200 characters')
     .optional(),
-  photoUri: z.string().nullable().optional(),
+  photoUri: z.object({
+    uri: z.string(),
+    width: z.number(),
+    height: z.number(),
+  }).nullable().optional(),
 });
 
 export type ExpenseFormValues = z.infer<typeof expenseFormSchema>;

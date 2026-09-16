@@ -9,7 +9,8 @@ function FormSelect<T extends FieldValues>({
   name,
   label,
   options,
-}: FormSelectProps<T>) {
+  onSelect,
+}: FormSelectProps<T> & { onSelect: () => void }) {
   return (
     <Controller
       control={control}
@@ -24,7 +25,7 @@ function FormSelect<T extends FieldValues>({
                 <TouchableOpacity
                   key={option}
                   className={`category-chip ${active ? 'category-chip-active' : ''}`}
-                  onPress={() => onChange(option)}
+                  onPress={() => { onChange(option); onSelect(); }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: active }}>
                   <Text
