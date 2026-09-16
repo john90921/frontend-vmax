@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { SplashScreen } from 'expo-router';
 // import {SafeAreaView as RNSSafeAreaView} from 'react-native-safe-area-context';
 import { styled } from 'nativewind';
+import { AppStateProvider } from '@/context/AppStateContext';
 // const SafeAreaView =styled(RNSSafeAreaView);
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -36,14 +37,22 @@ export default function RootLayout() {
   }
   return (
     <KeyboardProvider>
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="expenses/AddExpence"
-        options={{ presentation: 'modal', headerShown: false }}
-      />
-    </Stack>
+      <AppStateProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="expenses/AddExpenceForm"
+            options={{ presentation: 'modal', headerShown: false }}
+          />
+          <Stack.Screen
+            name="expenses/ExpenceDetail"
+            options={{ headerShown: false }}
+          />
+
+        </Stack>
+      </AppStateProvider>
     </KeyboardProvider>
   );
 }

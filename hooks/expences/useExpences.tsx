@@ -1,6 +1,7 @@
 import { useReducer } from "react";
 import { ExpenceType } from "@/types/Expence";
-interface ExpencesState {
+import { createDispatchWithLogging } from "@/utils/dispatchWithLogging";
+export interface ExpencesState {
     expences: ExpenceType[];
     loading: boolean;
     error: string | null;
@@ -28,60 +29,60 @@ type ExpencesAction = {
     loading: boolean;
 }
 
-function expencesReducer(state: ExpencesState, action: ExpencesAction): ExpencesState {
+function expencesReducer(expencesState: ExpencesState, action: ExpencesAction): ExpencesState {
     switch (action.type) {
         case 'SET_EXPENCES':
             return{
-                ...state,
+                ...expencesState,
                 expences: action.expences,
             }
         case 'ADD_EXPENCE':
             return{
-                ...state,
-                expences: [...state.expences, action.expence],
+                ...expencesState,
+                expences: [...expencesState.expences, action.expence],
             }
         case 'SET_ERROR':
             return{
-                ...state,
+                ...expencesState,
                 error: action.error,
             }
         case 'LOADING':
             return{
-                ...state,
+                ...expencesState,
                 loading: action.loading,
             }
         default:
-            return state;
+            return expencesState;
     }
 }
 export const useExpences = () => {
-    const [state, dispatch] = useReducer(expencesReducer, initialExpencesState);
-
+    const [expencesState, dispatch] = useReducer(expencesReducer, initialExpencesState);
+    const logDispatch = createDispatchWithLogging<ExpencesAction>(dispatch,'useExpences.tsx');
     const fetchExpences = async ()=> {
         dispatch({ type: 'LOADING', loading: true });
         await new Promise(resolve => setTimeout(resolve, 1000));
-        dispatch({ type: 'SET_EXPENCES', expences: [
-            { id: 1, name: 'Coffee', amount: 4.5, date: '2026-09-09', time: '10:00' },
-            { id: 2, name: 'Coffee', amount: 4.5, date: '2026-09-09', time: '10:00' },
-            { id: 3, name: 'Coffee', amount: 4.5, date: '2026-09-07', time: '10:00' },
-            { id: 4, name: 'Coffee', amount: 4.5, date: '2026-09-06', time: '10:00' },
-            { id: 5, name: 'Coffee', amount: 4.5, date: '2026-09-05', time: '10:00' },
-            { id: 6, name: 'Coffee', amount: 4.5, date: '2026-09-04', time: '10:00' },
-            { id: 7, name: 'Coffee', amount: 4.5, date: '2026-09-03', time: '10:00' },
-            { id: 8, name: 'Coffee', amount: 4.5, date: '2026-09-02', time: '10:00' },
-            { id: 9, name: 'Coffee', amount: 4.5, date: '2026-09-01', time: '10:00' },
-            { id: 10, name: 'Coffee', amount: 4.5, date: '2026-08-31', time: '10:00' },
+        logDispatch({ type: 'SET_EXPENCES', expences: [
+            { id: 1, category: 'Fod', amount: 4.5, date: '2026-09-09', time: '10:00' },
+            { id: 2, category: 'Food', amount: 4.5, date: '2026-09-09', time: '10:00' },
+            { id: 3, category: 'Food', amount: 4.5, date: '2026-09-07', time: '10:00' },
+            { id: 4, category: 'Food', amount: 4.5, date: '2026-09-06', time: '10:00' },
+            { id: 5, category: 'Food', amount: 4.5, date: '2026-09-05', time: '10:00' },
+            { id: 6, category: 'Food', amount: 4.5, date: '2026-09-04', time: '10:00' },
+            { id: 7, category: 'Food', amount: 4.5, date: '2026-09-03', time: '10:00' },
+            { id: 8, category: 'Food', amount: 4.5, date: '2026-09-02', time: '10:00' },
+            { id: 9, category: 'Food', amount: 4.5, date: '2026-09-01', time: '10:00' },
+            { id: 10, category: 'Fod', amount: 4.5, date: '2026-08-31', time: '10:00' },
         ]});
-        dispatch({ type: 'LOADING', loading: false });
+        logDispatch({ type: 'LOADING', loading: false });
     }
     const addExpence = async (expence: ExpenceType)=> {
-        dispatch({ type: 'LOADING', loading: true });
+        logDispatch({ type: 'LOADING', loading: true });
         await new Promise(resolve => setTimeout(resolve, 1000));
-        dispatch({ type: 'ADD_EXPENCE', expence: expence });
-        dispatch({ type: 'LOADING', loading: false });
+        console.log('expence', expencesState.expences);
+        logDispatch({ type: 'LOADING', loading: false });
     }
     return {
-        state,
+        expencesState,
         fetchExpences,
         addExpence
     };

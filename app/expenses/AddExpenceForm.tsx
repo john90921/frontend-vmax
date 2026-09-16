@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardController } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useExpences } from '@/hooks/expences/useExpences';
 import Button from '@/components/button';
 import FormDateTime from '@/components/form/FormDateTime';
 import FormInput from '@/components/form/FormInput';
@@ -18,8 +17,11 @@ import {
   expenseFormSchema,
   getExpenseFormDefaults,
 } from '@/schemas/expense';
+import { useAppState } from '@/context/AppStateContext';
 
-export default function AddExpense() {
+export default function AddExpenceForm() {
+  const { expencesState, addExpence } = useAppState();
+
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   const {
@@ -30,10 +32,19 @@ export default function AddExpense() {
     resolver: zodResolver(expenseFormSchema),
     defaultValues: getExpenseFormDefaults(),
   });
-  const { state } = useExpences();
-  const onSubmit = (values: ExpenseFormValues) => {
+  const onSubmit = async (values: ExpenseFormValues) => {
+    await addExpence({
+      amount: values.amount,
+      date: values.date,
+      time: values.time,
+      category: values.category,
+      description: values.description
+    });
     Alert.alert('Expense saved', `${values.category} · $${values.amount.toFixed(2)}`, [
-      { text: 'OK', onPress: () => router.back() },
+      { text: 'OK', onPress: () => {console.log('OK pressed'); 
+        control._reset();
+        KeyboardController.dismiss();
+      } },
     ]);
   };
 
@@ -104,7 +115,7 @@ export default function AddExpense() {
         className="border-t border-border bg-background px-5 pt-4"
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
         <Button
-          title={isSubmitting ? 'Saving…' : 'Save expense'}
+          title={expencesState.loading ? 'Saving…' : 'Save expense'}
           variant="primary"
           styles="w-full"
           disabled={isSubmitting}
