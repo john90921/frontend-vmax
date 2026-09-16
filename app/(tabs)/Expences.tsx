@@ -1,12 +1,11 @@
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 
 import Button from '@/components/button';
 import { colors, spacing } from '@/constants/theme';
 import { ExpenceType } from '@/types/Expence';
-import { useExpences } from '@/hooks/expences/useExpences';
-
+import { useAppState } from '@/context/AppStateContext';
 // const SEED_EXPENSES: ExpenceType[] = [
 //   { id: 1, name: 'Coffee', amount: 4.5, date: '2026-09-09', time: '10:00' },
 //   { id: 2, name: 'Coffee', amount: 4.5, date: '2026-09-09', time: '10:00' },
@@ -43,12 +42,12 @@ function sortExpenses(list: ExpenceType[]) {
   });
 }
 
-function ExpenseRow({ expense }: { expense: ExpenceType }) {
+function ExpenseRow({ expense, onPress }: { expense: ExpenceType; onPress: () => void }) {
   return (
-    <View className="sub-card">
-      <View className="flex-row state.expences-center justify-between gap-3">
+    <TouchableOpacity className="sub-card" onPress={onPress} activeOpacity={0.8}>
+      <View className="flex-row items-center justify-between gap-3">
         <View className="min-w-0 flex-1">
-          <Text className="sub-title">{expense.name}</Text>
+          <Text className="sub-title">{expense.category}</Text>
           <Text className="sub-meta">
             {formatDateLabel(expense.date)} · {expense.time}
           </Text>
@@ -57,7 +56,7 @@ function ExpenseRow({ expense }: { expense: ExpenceType }) {
           {formatAmount(expense.amount)}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -67,16 +66,16 @@ const Expences = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const { state, fetchExpences } = useExpences();
-  const expences = useMemo(() => sortExpenses(state.expences), [state.expences]);
+  const { expencesState, fetchExpences } = useAppState();
+  const expences = useMemo(() => sortExpenses(expencesState.expences), [expencesState.expences]);
 
   const totalSpent = useMemo(
-    () => state.expences.reduce((sum, item) => sum + item.amount, 0),
-    [state.expences],
+    () => expencesState.expences.reduce((sum, item) => sum + item.amount, 0),
+    [expencesState.expences],
   );
   useEffect(() => {
     fetchExpences();
-  }, [fetchExpences]);
+  }, []);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -122,13 +121,16 @@ const Expences = () => {
               {formatDateLabel(item.date)}
             </Text>
           ) : null}
-          <ExpenseRow expense={item} />
+          <ExpenseRow
+            expense={item}
+            onPress={() => router.push(`/expenses/ExpenceDetail?id=${item.id}`)}
+          />
         </View>
       );
     },
     [expences],
   );
-  if(state.loading) return <ActivityIndicator size="large" color={colors.accent} />;
+  if(expencesState.loading) return <ActivityIndicator size="large" color={colors.accent} />;
   return (
     <View className="flex-1 bg-background">
         <View className="flex-row state.expences-center justify-end gap-3 m-3">
@@ -136,7 +138,7 @@ const Expences = () => {
              title=""
              icon="add"
              variant="outline"
-             onPress={() => router.push('../expenses/AddExpence')}
+             onPress={() => router.push('../expenses/AddExpenceForm')}
            />
         </View>
       <FlatList

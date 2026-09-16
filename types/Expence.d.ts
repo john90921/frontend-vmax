@@ -1,7 +1,8 @@
 export type ExpenceType = {
-    id: number;
-    name: string;
+    id?: number;
     amount: number;
     date: string;
     time: string;
+    category?: ExpenseCategory|null;
+    description?: string|null;
 }
